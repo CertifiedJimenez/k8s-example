@@ -1,0 +1,5 @@
+image: nginx
+tag: alpine
+
+# Backend service name (must match backend release/service)
+backendService: backend

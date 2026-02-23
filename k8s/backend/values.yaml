@@ -1,0 +1,4 @@
+image: hashicorp/http-echo
+args:
+  - "-listen=:80"
+  - "-text={\"service\":\"backend\",\"status\":\"ok\"}"
