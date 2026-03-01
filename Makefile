@@ -1,29 +1,35 @@
-# K8s test setup
-NAMESPACE := default
+CLUSTER_NAME := k8s-test
+REGION       := us-east-1
 
-.PHONY: cluster-up cluster-down install uninstall reset run stop status
+.PHONY: connect apply diff destroy status url tf-init tf-apply tf-destroy
 
-cluster-up:
-	minikube start
+# --- Kubernetes ---
 
-cluster-down:
-	minikube stop
+connect:
+	aws eks update-kubeconfig --region $(REGION) --name $(CLUSTER_NAME)
 
-install:
-	helm upgrade --install backend ./charts/backend -n $(NAMESPACE) --wait --timeout 120s
-	helm upgrade --install frontend ./charts/frontend -n $(NAMESPACE) --wait --timeout 120s
+apply:
+	cd k8s && helmfile sync
 
-uninstall:
-	helm uninstall frontend -n $(NAMESPACE) 2>/dev/null || true
-	helm uninstall backend -n $(NAMESPACE) 2>/dev/null || true
+diff:
+	cd k8s && helmfile diff
 
-reset: uninstall
-
-run: cluster-up install
-	minikube service frontend
-
-stop:
-	@echo "Run 'make uninstall' to remove releases, 'make cluster-down' to stop minikube"
+destroy:
+	cd k8s && helmfile destroy
 
 status:
-	kubectl get pods,svc -l 'app in (backend,frontend)'
+	kubectl get pods,svc -A
+
+url:
+	@kubectl get svc frontend -n apps -o jsonpath='http://{.status.loadBalancer.ingress[0].hostname}'
+
+# --- Terraform ---
+
+tf-init:
+	cd terraform && terraform init
+
+tf-apply:
+	cd terraform && terraform apply -auto-approve
+
+tf-destroy:
+	cd terraform && terraform destroy -auto-approve

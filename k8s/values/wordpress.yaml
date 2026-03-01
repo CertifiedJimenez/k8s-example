@@ -1,0 +1,24 @@
+mariadb:
+  primary:
+    persistence:
+      enabled: false
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/mariadb
+
+persistence:
+  enabled: false
+
+wordpressUsername: admin
+wordpressPassword: admin123
+
+service:
+  type: LoadBalancer
+
+image:
+  registry: docker.io
+  repository: bitnamilegacy/wordpress
+
+global:
+  security:
+    allowInsecureImages: true

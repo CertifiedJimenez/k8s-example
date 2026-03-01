@@ -1,0 +1,6 @@
+image: nginx
+tag: alpine
+
+serviceType: LoadBalancer
+
+backendService: backend

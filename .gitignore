@@ -1,0 +1,31 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
+*.tfbackend
+.tf/
+*.lock.hcl
+crash.log
+crash.*.log
+*.override
+*.backup
+*.log
+
+# Kubernetes
+*.kubeconfig
+kubeconfig
+*.yaml.ejson
+*.yaml.enc
+*.dockercfg
+*.jwt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+add 
+
+.env

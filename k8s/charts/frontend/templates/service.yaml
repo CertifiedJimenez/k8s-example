@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: frontend
 spec:
-  type: NodePort
+  type: {{ .Values.serviceType }}
   ports:
     - port: 80
       targetPort: http
