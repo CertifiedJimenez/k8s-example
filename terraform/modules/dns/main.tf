@@ -47,5 +47,19 @@ resource "aws_ssm_parameter" "certificate_arn" {
   tags  = var.tags
 }
 
+resource "aws_ssm_parameter" "domain" {
+  name  = "/${var.cluster_name}/domain"
+  type  = "String"
+  value = var.domain
+  tags  = var.tags
+}
+
+resource "aws_ssm_parameter" "blog_fqdn" {
+  name  = "/${var.cluster_name}/blog-fqdn"
+  type  = "String"
+  value = var.blog_fqdn
+  tags  = var.tags
+}
+
 # CNAME record is owned by external-dns running in the cluster —
 # it watches the Ingress and writes this record automatically

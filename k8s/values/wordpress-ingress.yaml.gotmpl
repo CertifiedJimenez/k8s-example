@@ -1,4 +1,5 @@
 ingress:
+  hostname: {{ .Environment.Values.blog_fqdn }}
   annotations:
     alb.ingress.kubernetes.io/certificate-arn: 'ref+awsssm://{{ .Environment.Values.cluster_name }}/certificate-arn?region={{ .Environment.Values.region }}'
     alb.ingress.kubernetes.io/group.name: wordpress

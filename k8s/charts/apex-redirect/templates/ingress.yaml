@@ -12,11 +12,11 @@ metadata:
     alb.ingress.kubernetes.io/ssl-redirect: "443"
     alb.ingress.kubernetes.io/certificate-arn: {{ .Values.certificateArn | quote }}
     alb.ingress.kubernetes.io/actions.redirect-to-blog: |
-      {"type":"redirect","redirectConfig":{"host":"blog.non-production-senapowered-network.online","path":"/#{path}","query":"#{query}","statusCode":"HTTP_301"}}
+      {"type":"redirect","redirectConfig":{"host":"{{ .Values.blogFqdn }}","path":"/#{path}","query":"#{query}","statusCode":"HTTP_301"}}
 spec:
   ingressClassName: alb
   rules:
-    - host: non-production-senapowered-network.online
+    - host: {{ .Values.domain }}
       http:
         paths:
           - path: /
