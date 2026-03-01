@@ -1,3 +1,8 @@
+resource "random_pet" "wordpress_username" {
+  length    = 2
+  separator = "_"
+}
+
 resource "random_password" "wordpress" {
   length  = 24
   special = false
@@ -22,6 +27,7 @@ resource "aws_secretsmanager_secret_version" "wordpress" {
   secret_id = aws_secretsmanager_secret.wordpress.id
 
   secret_string = jsonencode({
+    wordpress-username    = random_pet.wordpress_username.id
     wordpress-password    = random_password.wordpress.result
     mariadb-root-password = random_password.mariadb_root.result
     mariadb-password      = random_password.mariadb.result

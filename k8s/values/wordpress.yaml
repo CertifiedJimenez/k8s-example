@@ -15,7 +15,7 @@ persistence:
   size: 8Gi
   storageClass: gp3
 
-wordpressUsername: admin
+wordpressExistingSecret: wordpress
 existingSecret: wordpress
 
 service:
