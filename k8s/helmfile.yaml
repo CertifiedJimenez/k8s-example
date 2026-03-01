@@ -3,6 +3,10 @@ repositories:
     url: https://charts.bitnami.com/bitnami
 
 releases:
+  - name: storage
+    namespace: kube-system
+    chart: ./charts/storage
+
   - name: backend
     namespace: apps
     createNamespace: true
@@ -20,5 +24,7 @@ releases:
     createNamespace: true
     chart: bitnami/wordpress
     version: 22.4.17
+    needs:
+      - kube-system/storage
     values:
       - ./values/wordpress.yaml

@@ -1,13 +1,17 @@
 mariadb:
   primary:
     persistence:
-      enabled: false
+      enabled: true
+      size: 8Gi
+      storageClass: gp3
   image:
     registry: docker.io
     repository: bitnamilegacy/mariadb
 
 persistence:
-  enabled: false
+  enabled: true
+  size: 8Gi
+  storageClass: gp3
 
 wordpressUsername: admin
 wordpressPassword: admin123
