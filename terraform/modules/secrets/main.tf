@@ -1,8 +1,3 @@
-resource "random_pet" "wordpress_username" {
-  length    = 2
-  separator = "_"
-}
-
 resource "random_password" "wordpress" {
   length  = 24
   special = false
@@ -27,8 +22,20 @@ resource "aws_secretsmanager_secret_version" "wordpress" {
   secret_id = aws_secretsmanager_secret.wordpress.id
 
   secret_string = jsonencode({
-    wordpress-username    = random_pet.wordpress_username.id
-    wordpress-password    = random_password.wordpress.result
+    wordpress-password = random_password.wordpress.result
+    wordpress-email    = "admin@${var.cluster_name}.com"
+  })
+}
+
+resource "aws_secretsmanager_secret" "mariadb" {
+  name                    = "${var.cluster_name}/mariadb"
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "mariadb" {
+  secret_id = aws_secretsmanager_secret.mariadb.id
+
+  secret_string = jsonencode({
     mariadb-root-password = random_password.mariadb_root.result
     mariadb-password      = random_password.mariadb.result
   })
@@ -58,9 +65,12 @@ resource "aws_iam_policy" "eso_secrets" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect   = "Allow"
-      Action   = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
-      Resource = aws_secretsmanager_secret.wordpress.arn
+      Effect = "Allow"
+      Action = ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"]
+      Resource = [
+        aws_secretsmanager_secret.wordpress.arn,
+        aws_secretsmanager_secret.mariadb.arn,
+      ]
     }]
   })
 }

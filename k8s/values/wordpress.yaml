@@ -8,14 +8,13 @@ mariadb:
     registry: docker.io
     repository: bitnamilegacy/mariadb
   auth:
-    existingSecret: wordpress
+    existingSecret: mariadb
 
 persistence:
   enabled: true
   size: 8Gi
   storageClass: gp3
 
-wordpressExistingSecret: wordpress
 existingSecret: wordpress
 
 service:

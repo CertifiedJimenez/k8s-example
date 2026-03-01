@@ -5,5 +5,10 @@ output "eso_role_arn" {
 
 output "wordpress_secret_arn" {
   value       = aws_secretsmanager_secret.wordpress.arn
-  description = "ARN of the WordPress GSM secret"
+  description = "ARN of the WordPress secret"
+}
+
+output "mariadb_secret_arn" {
+  value       = aws_secretsmanager_secret.mariadb.arn
+  description = "ARN of the MariaDB secret"
 }
