@@ -13,8 +13,6 @@ environments:
     values:
       - cluster_name: k8s-test
         region: us-east-1
-        domain: ref+awsssm://k8s-test/domain?region=us-east-1
-        blog_fqdn: ref+awsssm://k8s-test/blog-fqdn?region=us-east-1
 
 ---
 releases:

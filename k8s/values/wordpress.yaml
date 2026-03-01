@@ -24,6 +24,12 @@ image:
   registry: docker.io
   repository: bitnamilegacy/wordpress
 
+wordpressScheme: https
+
+wordpressExtraConfigContent: |
+  define('WP_HOME', 'https://' . $_SERVER['HTTP_HOST'] . '/');
+  define('WP_SITEURL', 'https://' . $_SERVER['HTTP_HOST'] . '/');
+
 global:
   security:
     allowInsecureImages: true

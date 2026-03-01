@@ -1,5 +1,7 @@
+wordpressScheme: https
+
 ingress:
-  hostname: {{ .Environment.Values.blog_fqdn }}
+  hostname: 'ref+awsssm://{{ .Environment.Values.cluster_name }}/blog-fqdn?region={{ .Environment.Values.region }}'
   annotations:
     alb.ingress.kubernetes.io/certificate-arn: 'ref+awsssm://{{ .Environment.Values.cluster_name }}/certificate-arn?region={{ .Environment.Values.region }}'
     alb.ingress.kubernetes.io/group.name: wordpress
