@@ -28,6 +28,9 @@ url:
 tf-init:
 	cd terraform && terraform init
 
+tf-plan:
+	cd terraform && terraform plan
+
 tf-apply:
 	cd terraform && terraform apply -auto-approve
 
