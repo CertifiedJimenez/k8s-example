@@ -29,3 +29,8 @@ variable "node_count" {
   default     = 2
   description = "Desired EKS node count"
 }
+
+variable "hosted_zone_arns" {
+  type        = list(string)
+  description = "Route53 hosted zone ARNs external-dns is allowed to manage"
+}

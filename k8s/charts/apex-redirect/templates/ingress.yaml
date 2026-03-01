@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apex-redirect
+  namespace: apps
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: wordpress
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443},{"HTTP":80}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/certificate-arn: {{ .Values.certificateArn | quote }}
+    alb.ingress.kubernetes.io/actions.redirect-to-blog: |
+      {"type":"redirect","redirectConfig":{"host":"blog.non-production-senapowered-network.online","path":"/#{path}","query":"#{query}","statusCode":"HTTP_301"}}
+spec:
+  ingressClassName: alb
+  rules:
+    - host: non-production-senapowered-network.online
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: redirect-to-blog
+                port:
+                  name: use-annotation

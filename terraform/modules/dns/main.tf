@@ -1,5 +1,3 @@
-# If create_zone = true  → Terraform creates the zone, outputs nameservers to add at your registrar
-# If create_zone = false → zone already exists and is delegated; Terraform just reads it
 resource "aws_route53_zone" "this" {
   count = var.create_zone ? 1 : 0
   name  = var.domain
@@ -27,6 +25,7 @@ resource "aws_acm_certificate" "this" {
   }
 }
 
+# Writes validation records so ACM validates in background — no blocking wait
 resource "aws_route53_record" "cert_validation" {
   for_each = {
     for dvo in aws_acm_certificate.this.domain_validation_options : dvo.domain_name => dvo
@@ -40,26 +39,13 @@ resource "aws_route53_record" "cert_validation" {
   allow_overwrite = true
 }
 
-resource "aws_acm_certificate_validation" "this" {
-  certificate_arn         = aws_acm_certificate.this.arn
-  validation_record_fqdns = [for r in aws_route53_record.cert_validation : r.fqdn]
-}
-
-# Skipped on first apply — set alb_hostname after the LB controller creates the ALB
-resource "aws_route53_record" "blog" {
-  count = var.alb_hostname != "" ? 1 : 0
-
-  zone_id = local.zone_id
-  name    = var.blog_fqdn
-  type    = "CNAME"
-  ttl     = 300
-  records = [var.alb_hostname]
-}
-
-# SSM bridge — helmfile reads this at sync time, no terraform coupling
+# SSM bridge — helmfile reads at sync time, no coupling between systems
 resource "aws_ssm_parameter" "certificate_arn" {
   name  = "/${var.cluster_name}/certificate-arn"
   type  = "String"
-  value = aws_acm_certificate_validation.this.certificate_arn
+  value = aws_acm_certificate.this.arn
   tags  = var.tags
 }
+
+# CNAME record is owned by external-dns running in the cluster —
+# it watches the Ingress and writes this record automatically

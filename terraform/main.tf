@@ -12,12 +12,13 @@ module "vpc" {
 module "k8s" {
   source = "./modules/k8s"
 
-  cluster_name    = var.cluster_name
-  region          = var.region
-  vpc_id          = module.vpc.vpc_id
-  private_subnets = module.vpc.private_subnets
-  node_type       = var.node_type
-  node_count      = var.node_count
+  cluster_name     = var.cluster_name
+  region           = var.region
+  vpc_id           = module.vpc.vpc_id
+  private_subnets  = module.vpc.private_subnets
+  node_type        = var.node_type
+  node_count       = var.node_count
+  hosted_zone_arns = [module.dns.zone_arn]
 }
 
 module "bedrock" {
@@ -39,7 +40,6 @@ module "dns" {
   cluster_name = var.cluster_name
   domain       = var.domain
   blog_fqdn    = local.blog_fqdn
-  alb_hostname = var.alb_hostname
   create_zone  = true
   tags         = local.tags
 }

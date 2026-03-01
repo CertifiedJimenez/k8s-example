@@ -1,0 +1,13 @@
+provider:
+  name: aws
+
+env:
+  - name: AWS_DEFAULT_REGION
+    value: {{ .Environment.Values.region }}
+
+extraArgs:
+  - --aws-zone-type=public
+
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: 'ref+awsssm://{{ .Environment.Values.cluster_name }}/external-dns-role-arn?region={{ .Environment.Values.region }}'

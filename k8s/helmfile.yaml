@@ -5,6 +5,8 @@ repositories:
     url: https://charts.external-secrets.io
   - name: eks
     url: https://aws.github.io/eks-charts
+  - name: external-dns-official
+    url: https://kubernetes-sigs.github.io/external-dns/
 
 environments:
   default:
@@ -12,6 +14,7 @@ environments:
       - cluster_name: k8s-test
         region: us-east-1
 
+---
 releases:
   - name: storage
     namespace: kube-system
@@ -23,9 +26,7 @@ releases:
     chart: external-secrets/external-secrets
     version: 0.10.7
     values:
-      - serviceAccount:
-          annotations:
-            eks.amazonaws.com/role-arn: '{{ awsssm (printf "/%s/eso-role-arn" .Environment.Values.cluster_name) }}'
+      - ./values/external-secrets.yaml.gotmpl
     hooks:
       - events: ["postsync"]
         command: kubectl
@@ -53,10 +54,26 @@ releases:
     needs:
       - kube-system/storage
     values:
-      - clusterName: {{ .Environment.Values.cluster_name }}
-        serviceAccount:
-          annotations:
-            eks.amazonaws.com/role-arn: '{{ awsssm (printf "/%s/alb-controller-role-arn" .Environment.Values.cluster_name) }}'
+      - ./values/alb-controller.yaml.gotmpl
+    hooks:
+      - events: ["postsync"]
+        command: kubectl
+        args:
+          - rollout
+          - status
+          - deployment/aws-load-balancer-controller
+          - -n
+          - kube-system
+          - --timeout=120s
+
+  - name: external-dns
+    namespace: kube-system
+    chart: external-dns-official/external-dns
+    version: 1.15.0
+    needs:
+      - kube-system/storage
+    values:
+      - ./values/external-dns.yaml.gotmpl
 
   - name: backend
     namespace: apps
@@ -79,8 +96,16 @@ releases:
       - kube-system/storage
       - apps/secrets
       - kube-system/aws-load-balancer-controller
+      - kube-system/external-dns
     values:
       - ./values/wordpress.yaml
-      - ingress:
-          annotations:
-            alb.ingress.kubernetes.io/certificate-arn: '{{ awsssm (printf "/%s/certificate-arn" .Environment.Values.cluster_name) }}'
+      - ./values/wordpress-ingress.yaml.gotmpl
+
+  - name: apex-redirect
+    namespace: apps
+    chart: ./charts/apex-redirect
+    needs:
+      - kube-system/aws-load-balancer-controller
+      - apps/wordpress
+    values:
+      - ./values/apex-redirect.yaml.gotmpl

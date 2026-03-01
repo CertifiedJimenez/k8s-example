@@ -32,6 +32,7 @@ ingress:
   enabled: true
   ingressClassName: alb
   hostname: blog.non-production-senapowered-network.online
+  pathType: Prefix
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip

@@ -1,0 +1,4 @@
+clusterName: {{ .Environment.Values.cluster_name }}
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: 'ref+awsssm://{{ .Environment.Values.cluster_name }}/alb-controller-role-arn?region={{ .Environment.Values.region }}'
