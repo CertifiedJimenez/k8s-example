@@ -23,7 +23,6 @@ resource "aws_secretsmanager_secret_version" "wordpress" {
 
   secret_string = jsonencode({
     wordpress-password = random_password.wordpress.result
-    wordpress-email    = "admin@${var.cluster_name}.com"
   })
 }
 
