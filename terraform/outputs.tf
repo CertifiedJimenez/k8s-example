@@ -16,6 +16,11 @@ output "configure_kubectl" {
   description = "Run this to configure kubectl for the cluster"
 }
 
+output "eso_role_arn" {
+  value       = module.secrets.eso_role_arn
+  description = "IRSA role ARN for External Secrets Operator"
+}
+
 # Bedrock API key outputs
 output "bedrock_api_key_user" {
   value = module.bedrock.bedrock_api_key_user

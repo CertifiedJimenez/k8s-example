@@ -1,11 +1,40 @@
 repositories:
   - name: bitnami
     url: https://charts.bitnami.com/bitnami
+  - name: external-secrets
+    url: https://charts.external-secrets.io
 
 releases:
   - name: storage
     namespace: kube-system
     chart: ./charts/storage
+
+  - name: external-secrets
+    namespace: external-secrets
+    createNamespace: true
+    chart: external-secrets/external-secrets
+    version: 0.10.7
+    values:
+      - ./values/external-secrets.yaml
+    hooks:
+      - events: ["postsync"]
+        command: kubectl
+        args:
+          - rollout
+          - status
+          - deployment/external-secrets-webhook
+          - -n
+          - external-secrets
+          - --timeout=120s
+
+  - name: secrets
+    namespace: apps
+    createNamespace: true
+    chart: ./charts/secrets
+    needs:
+      - external-secrets/external-secrets
+    values:
+      - ./values/secrets.yaml
 
   - name: backend
     namespace: apps
@@ -26,5 +55,6 @@ releases:
     version: 22.4.17
     needs:
       - kube-system/storage
+      - apps/secrets
     values:
       - ./values/wordpress.yaml

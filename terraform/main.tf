@@ -25,3 +25,10 @@ module "bedrock" {
 
   bedrock_user_name = var.bedrock_user_name
 }
+
+module "secrets" {
+  source = "./modules/secrets"
+
+  cluster_name      = var.cluster_name
+  oidc_provider_arn = module.k8s.oidc_provider_arn
+}
