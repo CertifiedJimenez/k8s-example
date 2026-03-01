@@ -77,3 +77,10 @@ resource "aws_iam_policy" "eso_secrets" {
     }]
   })
 }
+
+# SSM bridge — helmfile reads this at sync time, no terraform coupling
+resource "aws_ssm_parameter" "eso_role_arn" {
+  name  = "/${var.cluster_name}/eso-role-arn"
+  type  = "String"
+  value = module.eso_irsa.iam_role_arn
+}

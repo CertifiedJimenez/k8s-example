@@ -1,7 +1,7 @@
 CLUSTER_NAME := k8s-test
 REGION       := us-east-1
 
-.PHONY: connect apply diff destroy status url tf-init tf-apply tf-destroy
+.PHONY: connect apply diff destroy status url tf-init tf-plan tf-apply tf-destroy
 
 # --- Kubernetes ---
 

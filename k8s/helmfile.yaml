@@ -3,6 +3,14 @@ repositories:
     url: https://charts.bitnami.com/bitnami
   - name: external-secrets
     url: https://charts.external-secrets.io
+  - name: eks
+    url: https://aws.github.io/eks-charts
+
+environments:
+  default:
+    values:
+      - cluster_name: k8s-test
+        region: us-east-1
 
 releases:
   - name: storage
@@ -15,7 +23,9 @@ releases:
     chart: external-secrets/external-secrets
     version: 0.10.7
     values:
-      - ./values/external-secrets.yaml
+      - serviceAccount:
+          annotations:
+            eks.amazonaws.com/role-arn: '{{ awsssm (printf "/%s/eso-role-arn" .Environment.Values.cluster_name) }}'
     hooks:
       - events: ["postsync"]
         command: kubectl
@@ -35,6 +45,18 @@ releases:
       - external-secrets/external-secrets
     values:
       - ./values/secrets.yaml
+
+  - name: aws-load-balancer-controller
+    namespace: kube-system
+    chart: eks/aws-load-balancer-controller
+    version: 1.8.3
+    needs:
+      - kube-system/storage
+    values:
+      - clusterName: {{ .Environment.Values.cluster_name }}
+        serviceAccount:
+          annotations:
+            eks.amazonaws.com/role-arn: '{{ awsssm (printf "/%s/alb-controller-role-arn" .Environment.Values.cluster_name) }}'
 
   - name: backend
     namespace: apps
@@ -56,5 +78,9 @@ releases:
     needs:
       - kube-system/storage
       - apps/secrets
+      - kube-system/aws-load-balancer-controller
     values:
       - ./values/wordpress.yaml
+      - ingress:
+          annotations:
+            alb.ingress.kubernetes.io/certificate-arn: '{{ awsssm (printf "/%s/certificate-arn" .Environment.Values.cluster_name) }}'

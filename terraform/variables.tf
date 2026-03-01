@@ -18,3 +18,13 @@ variable "bedrock_user_name" {
   description = "IAM user name for Bedrock API key"
   default     = "bedrock-api-key-user"
 }
+
+variable "domain" {
+  description = "Root domain — Route53 hosted zone must already exist"
+  default     = "non-production-senapowered-network.online"
+}
+
+variable "alb_hostname" {
+  description = "ALB hostname — populate after first apply to create the CNAME"
+  default     = ""
+}

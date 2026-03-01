@@ -32,3 +32,14 @@ module "secrets" {
   cluster_name      = var.cluster_name
   oidc_provider_arn = module.k8s.oidc_provider_arn
 }
+
+module "dns" {
+  source = "./modules/dns"
+
+  cluster_name = var.cluster_name
+  domain       = var.domain
+  blog_fqdn    = local.blog_fqdn
+  alb_hostname = var.alb_hostname
+  create_zone  = true
+  tags         = local.tags
+}
