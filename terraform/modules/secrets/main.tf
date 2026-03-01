@@ -21,7 +21,11 @@ resource "aws_secretsmanager_secret" "wordpress" {
 resource "aws_secretsmanager_secret_version" "wordpress" {
   secret_id = aws_secretsmanager_secret.wordpress.id
 
+  # Default credentials based on the Bitnami WordPress Docker image defaults
+  # See: https://hub.docker.com/r/bitnami/wordpress (WORDPRESS_USERNAME, WORDPRESS_EMAIL, WORDPRESS_PASSWORD)
   secret_string = jsonencode({
+    wordpress-username = var.wordpress_username
+    wordpress-email    = var.wordpress_email
     wordpress-password = random_password.wordpress.result
   })
 }
